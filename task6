@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Task6</title>
+        <link rel="stylesheet" href="https://js.arcgis.com/3.22/esri/css/esri.css">
+        <script src="https://js.arcgis.com/3.22/"></script>
+        <script>
+        	require(["esri/map",
+        	"esri/layers/FeatureLayer",
+        	"esri/tasks/query",
+        	"esri/toolbars/draw",
+        	"dojo/dom",
+        	"dojo/on"],function(Map, FeatureLayer, Query, Draw, dom, on){
+        		let map = new Map("map",{
+        			basemap: "streets",
+        			autoresize: true,
+        			center: [-122.431297, 37.773972],
+        			zoom: 10
+        		});
+        		let urlString = "http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/SanFrancisco/311Incidents/FeatureServer/0";
+        		featureLayer = new FeatureLayer(urlString, {
+        			mode: FeatureLayer.MODE_SELECTION});
+        			
+        		drawToolbar = new Draw(map);
+        		drawToolbar.on('draw-end', function(e){
+        			drawToolbar.deactivate(); //deactivate toolbar and active map navigation
+        			let query = new Query();
+        			query.geometry = e.geomety;
+        			featureLayer.selectFeatures(query);
+        		});
+        		map.addLayer(featureLayer);
+        		on(dom.byId("drawPolygon"), "click", function(){
+        			drawToolbar.activate(Draw.POLYGON);
+        		});
+        	});
+        </script>
+    </head>
+    <body>
+        <h1>Toolbars</h1>
+        <input name="drawPolygon" id="drawPolygon" type="button" value="Draw to query">
+        <div id="map"> </div>
+    </body>
+</html>
+
